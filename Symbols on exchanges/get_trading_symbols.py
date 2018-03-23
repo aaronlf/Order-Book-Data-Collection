@@ -81,13 +81,14 @@ def initialise_and_fetch_symbols():
         
         
 def delete_fiat_symbols():
+    remove_dead_cryptopia_pairs()
+    remove_bad_kraken_pairs()
     for i in exchanges_and_symbols:
             try:
                 filtered_list = [x for x in exchanges_and_symbols[i] if x.split('/')[1] not in fiat_quotes]
                 exchanges_and_symbols[i] = filtered_list
             except:
                 print('Error deleting fiat symbols from '+str(i))
-    remove_dead_cryptopia_pairs()
 
 
 #------------------------------------------------------------------------------
@@ -96,6 +97,17 @@ def delete_fiat_symbols():
 def remove_dead_cryptopia_pairs():
     pairs = [i for i in exchanges_and_symbols['cryptopia'] if i.split('/')[1] not in ['DOGE','LTC']]
     exchanges_and_symbols['cryptopia'] = pairs
+    
+    
+#------------------------------------------------------------------------------
+
+
+def remove_bad_kraken_pairs():
+    bad_pairs = ['ETHCAD.d', 'ETHEUR.d', 'ETHGBP.d', 'ETHJPY.d', 
+                 'ETHUSD.d', 'ETHXBT.d','XBTCAD.d', 'XBTEUR.d', 
+                 'XBTGBP.d', 'XBTJPY.d', 'XBTUSD.d']
+    pairs = [i for i in exchanges_and_symbols['kraken'] if i not in bad_pairs]
+    exchanges_and_symbols['kraken'] = pairs
     
     
 #------------------------------------------------------------------------------
@@ -143,7 +155,6 @@ def organize_symbols():
             if i in small_list:
                 new_exchange_dict[ex].append(i)
                 test_list.append(i)
-    
     #print(Counter(test_list)) # This is proof that each symbol occurs more than once
     #print()
     #for j in sorted(new_exchange_dict):
