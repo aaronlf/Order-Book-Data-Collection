@@ -4,6 +4,8 @@ Created on Fri Mar 23 11:22:40 2018
 
 @author: Aaron
 """
+# NOTE: MOST PRINT STATEMENTS HAVE BEEN COMMENTED OUT. 
+
 import ccxt
 from collections import Counter
 
@@ -58,7 +60,7 @@ def main():
 
 
 def initialise_and_fetch_symbols():
-    print("Loading markets...")
+    #print("Loading markets...")
     for i in exchanges_and_symbols:
         exch = getattr(ccxt,i)()
         try:
@@ -72,7 +74,7 @@ def initialise_and_fetch_symbols():
                 exchanges_and_symbols[i] = exch.symbols
         except:
             print("EXCHANGE '"+str(exch.name)+"' CONNECTION FAILED")
-    print("Markets loaded.\n")
+    #print("Markets loaded.\n")
     
     
 #------------------------------------------------------------------------------   
@@ -100,13 +102,13 @@ def remove_dead_cryptopia_pairs():
     
     
 def collect_symbols_to_list():
-    print("Putting symbols into big list...")
+    #print("Putting symbols into big list...")
     big_list = []
     for i in exchanges_and_symbols:
         i_list = list(exchanges_and_symbols[i])
         for j in i_list:
             big_list.append(j)
-    print("Big list collected. \nLength =",len(big_list))
+    #print("Big list collected. \nLength =",len(big_list))
     return big_list
 
 
@@ -115,13 +117,13 @@ def collect_symbols_to_list():
 
 def narrow_down_list():
     big_list = collect_symbols_to_list()
-    print('\nNarrowing down big list...')
+    #print('\nNarrowing down big list...')
     narrowed_list = []
     narrowed_dict = Counter(big_list)
     for i in narrowed_dict:
         if narrowed_dict[i] > 1:
             narrowed_list.append(i)
-    print("List has been narrowed down. \nNumber of different symbols =",len(narrowed_list))
+    #print("List has been narrowed down. \nNumber of different symbols =",len(narrowed_list))
     return narrowed_list
 
 
@@ -142,12 +144,11 @@ def organize_symbols():
                 new_exchange_dict[ex].append(i)
                 test_list.append(i)
     
-    print(Counter(test_list)) # This is proof that each symbol occurs more than once
-    print()
-    for j in sorted(new_exchange_dict):
-        print("'"+str(j)+"':"+str(new_exchange_dict[j])+",\n") # This is for tidy output as it will be copied and pasted into a Python file        
-    # The final comma must be skipped manually when copying and pasting
-    print()
+    #print(Counter(test_list)) # This is proof that each symbol occurs more than once
+    #print()
+    #for j in sorted(new_exchange_dict):
+        #print("'"+str(j)+"':"+str(new_exchange_dict[j])+",\n") # This is for tidy output as it will be copied and pasted into a Python file        
+    #print()
     return new_exchange_dict
 
 
