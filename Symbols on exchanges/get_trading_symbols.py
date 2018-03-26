@@ -97,7 +97,7 @@ def delete_fiat_symbols():
 
 
 def remove_dead_cryptopia_pairs():
-    pairs = [i for i in exchanges_and_symbols['cryptopia']['symbols'] if i.split('/')[1] not in ['DOGE','LTC']]
+    pairs = [i for i in exchanges_and_symbols['cryptopia']['symbols'] if i.split('/')[1] not in ['DOGE']]
     exchanges_and_symbols['cryptopia']['symbols'] = pairs
     
     
