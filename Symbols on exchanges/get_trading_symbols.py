@@ -53,6 +53,7 @@ fiat_quotes = ['EUR','USD','CAD','GBP','RUR','PLN','AUD','BRL',
 def main():
     initialise_and_fetch_symbols()
     delete_fiat_symbols()
+    print()
     return count_symbols_per_exchange()
     
     

@@ -6,21 +6,6 @@ Created on Sat Mar 24 18:22:34 2018
 """
 
 
-'''
-
-NEEDS TO ACCEPT A DITIONARY OF ALL THE EXCHANGES AND SYMBOLS THAT HAVE BEEN LOADED.
-
-THERE SHOULD ALSO BE VALUES IN THE DICTIONARY ASSINGING CERTAIN EXCHANGES WITH 
-CERTAIN SERVERS.
-
-THE FUNCTION USED IN THIS SCRIPT SHOULD TAKE THE SERVER NUMBER AS AN ARGUMENT.
-THIS SERVER NUMBER WILL BE ASSIGNED TO THE MAIN DATA COLLECTION PROGRAM INDIVIDUALLY, 
-DEPENDING ON WHAT SERVER IT WILL BE RUN FROM.
-
-IMPORTANT NOTE: CAN **NOT** HAVE TWO DIFFERENT SERVERS WRITING TO THE SAME H5 FILE
-AS EACH SERVER WILL ACTUALLY HAVE ITS OWN SEPARATE COPY
-
-'''
 # INCLUDE INFO HERE:
 # SERVERS 1-10 ARE BASED IN USA
 # SERVERS 11-20 ARE BASED IN EUROPE
@@ -34,35 +19,35 @@ import get_trading_symbols
 
 
 exchange_servers = {
-        'acx':{"servers":list(range(1,11))}, # Servers 1-10 . example. Edit this
-        'anxpro':{"servers":list(range(1,11))},
-        'bibox':{"servers":list(range(1,11))},
-        'binance':{"servers":list(range(1,11))},
-        'bitfinex':{"servers":list(range(1,11))},
-        'bitlish':{"servers":list(range(1,11))},
-        'bitstamp':{"servers":list(range(1,11))},
-        'bittrex':{"servers":list(range(1,11))},
-        'bleutrade':{"servers":list(range(1,11))}, 
-        'cryptopia':{"servers":list(range(1,11))}, 
-        'dsx':{"servers":list(range(1,11))}, 
-        'exmo':{"servers":list(range(1,11))}, 
-        'gateio':{"servers":list(range(1,11))},
-        'hitbtc':{"servers":list(range(1,11))},
-        'huobipro':{"servers":list(range(1,11))},
-        'kraken':{"servers":list(range(1,11))},
-        'kucoin':{"servers":list(range(1,11))},
-        'liqui':{"servers":list(range(1,11))},
-        'livecoin':{"servers":list(range(1,11))},
-        'okex':{"servers":list(range(1,11))},
-        'poloniex':{"servers":list(range(1,11))},
-        'quadrigacx':{"servers":list(range(1,11))},
-        'southxchange':{"servers":list(range(1,11))},
-        'tidex':{"servers":list(range(1,11))},
-        'zaif':{"servers":list(range(1,11))}
+        'acx':{"servers":list(range(0,10))}, # Servers 0-9 . example. Edit this
+        'anxpro':{"servers":list(range(0,10))},
+        'bibox':{"servers":list(range(0,10))},
+        'binance':{"servers":list(range(0,10))},
+        'bitfinex':{"servers":list(range(0,10))},
+        'bitlish':{"servers":list(range(0,10))},
+        'bitstamp':{"servers":list(range(0,10))},
+        'bittrex':{"servers":list(range(0,10))},
+        'bleutrade':{"servers":list(range(0,10))}, 
+        'cryptopia':{"servers":list(range(0,10))}, 
+        'dsx':{"servers":list(range(0,10))}, 
+        'exmo':{"servers":list(range(0,10))}, 
+        'gateio':{"servers":list(range(0,10))},
+        'hitbtc':{"servers":list(range(0,10))},
+        'huobipro':{"servers":list(range(0,10))},
+        'kraken':{"servers":list(range(0,6))},
+        'kucoin':{"servers":list(range(0,10))},
+        'liqui':{"servers":list(range(0,10))},
+        'livecoin':{"servers":list(range(0,10))},
+        'okex':{"servers":list(range(0,10))},
+        'poloniex':{"servers":list(range(0,10))},
+        'quadrigacx':{"servers":list(range(0,10))},
+        'southxchange':{"servers":list(range(0,10))},
+        'tidex':{"servers":list(range(0,10))},
+        'zaif':{"servers":list(range(0,10))}
         }
 
 
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------ 
 
 
 def add_symbols_to_dict():
@@ -75,10 +60,40 @@ def add_symbols_to_dict():
     for i in exchanges_and_symbols:
         for j in exchange_servers:
             if i == j:
-                exchange_servers[i]['symbols'] = exchange_and_symbols[i]['symbols']
-                exchange_servers[i]['exch_object'] = exchange_and_symbols[i]['exch_object']
+                exchange_servers[i]['symbols'] = exchanges_and_symbols[i]['symbols']
+                exchange_servers[i]['exch_object'] = exchanges_and_symbols[i]['exch_object']
 
 #------------------------------------------------------------------------------
                 
                 
-def 
+def designate(server_num):
+    for i in exchange_servers:
+        servers = exchange_servers[i]['servers']
+        
+        if server_num in servers:
+            symbols = exchange_servers[i]['symbols']
+            
+            amount_of_symbols = len(symbols)
+            amount_of_servers = len(servers)
+        
+            in_each = amount_of_symbols // amount_of_servers
+            remainder = amount_of_symbols % amount_of_servers
+            
+            index = servers.index(server_num)
+            symbols_needed = symbols[in_each*index:in_each*(index+1)]
+            if index < remainder:
+                symbols_needed.append(symbols[(amount_of_servers*in_each)+index])
+            exchange_servers[i]['symbols'] = symbols_needed
+        else:
+            exchange_servers[i]['symbols'] = []
+            
+
+#------------------------------------------------------------------------------
+            
+            
+def main(n):
+    add_symbols_to_dict()
+    designate(n)
+
+
+#------------------------------------------------------------------------------
