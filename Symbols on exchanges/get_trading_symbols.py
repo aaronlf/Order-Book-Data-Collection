@@ -107,8 +107,8 @@ def remove_bad_kraken_pairs():
     bad_pairs = ['ETHCAD.d', 'ETHEUR.d', 'ETHGBP.d', 'ETHJPY.d', 
                  'ETHUSD.d', 'ETHXBT.d','XBTCAD.d', 'XBTEUR.d', 
                  'XBTGBP.d', 'XBTJPY.d', 'XBTUSD.d']
-    pairs = [i for i in exchanges_and_symbols['kraken'] if i not in bad_pairs]
-    exchanges_and_symbols['kraken'] = pairs
+    pairs = [i for i in exchanges_and_symbols['kraken']['symbols'] if i not in bad_pairs]
+    exchanges_and_symbols['kraken']['symbols'] = pairs
     
     
 #------------------------------------------------------------------------------
@@ -152,6 +152,7 @@ def organize_symbols():
         new_exchange_dict[ex] = {} # Empty dict for the exchange in the new_exchange dictionary
         symbols = exchanges_and_symbols[ex]['symbols']
         new_exchange_dict[ex]['exch_object'] = exchanges_and_symbols[ex]['exch_object']
+        new_exchange_dict[ex]['symbols'] = []
         
         for i in symbols:
             if i in small_list:
@@ -172,7 +173,7 @@ def count_symbols_per_exchange():
     new_dict = organize_symbols()
     for exchange in sorted(new_dict):
         #print(new_dict)
-        print(str(exchange)+" - Number of trading symbols: "+str(len(new_dict[exchange])))
+        print(str(exchange)+" - Number of trading symbols: "+str(len(new_dict[exchange]['symbols'])))
     return new_dict
 
 #------------------------------------------------------------------------------
