@@ -56,7 +56,7 @@ def main():
     print()
     return count_symbols_per_exchange()
     
-    
+
 #------------------------------------------------------------------------------
 
 
@@ -172,9 +172,13 @@ def organize_symbols():
 
 def count_symbols_per_exchange():
     new_dict = organize_symbols()
+    total_symbols = 0
     for exchange in sorted(new_dict):
-        #print(new_dict)
-        print(str(exchange)+" - Number of trading symbols: "+str(len(new_dict[exchange]['symbols'])))
+        num_of_symbols = len(new_dict[exchange]['symbols'])
+        total_symbols += num_of_symbols
+        print(str(exchange)+" - Number of trading symbols: "+str(num_of_symbols))
+    print("Total number of symbols:",total_symbols)
     return new_dict
+
 
 #------------------------------------------------------------------------------
