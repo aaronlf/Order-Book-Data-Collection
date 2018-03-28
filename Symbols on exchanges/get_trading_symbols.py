@@ -177,7 +177,7 @@ def count_symbols_per_exchange():
         num_of_symbols = len(new_dict[exchange]['symbols'])
         total_symbols += num_of_symbols
         print(str(exchange)+" - Number of trading symbols: "+str(num_of_symbols))
-    print("Total number of symbols:",total_symbols)
+    print("\nTotal number of symbols:",total_symbols+'\n')
     return new_dict
 
 
