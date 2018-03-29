@@ -9,6 +9,10 @@ import pandas as pd
 import time
 import numpy as np
 
+
+#------------------------------------------------------------------------------
+
+
 def write_to_hdf(symbol,exchange_name,df):
     key = symbol+'_'+exchange_name
     path = 'orderbook/'+key+'.h5'
@@ -18,7 +22,8 @@ def write_to_hdf(symbol,exchange_name,df):
     store.close()
     pass
  
-def retrieve_hdf_data(symbol,exchange_name,df):
+    
+def retrieve_hdf_data(symbol,exchange_name):
     key = symbol+'_'+exchange_name
     path = 'orderbook/'+key+'.h5'
     store = pd.HDFStore(path)
@@ -40,10 +45,8 @@ def append_to_hdf(symbol,exchange_name,df):
     
 
 def get_orderbook(symbol,exch_object):
-    orderbook = exch_object.fetch_l2_order_book(symbol,3)
+    orderbook = fetch_orders_safely(symbol,exch_object)
     precision = exch_object.markets[symbol]['precision']
-
-
     timestamp = orderbook['timestamp']    
     bid_volume = 0
     bid_weighted_price = 0
@@ -56,7 +59,6 @@ def get_orderbook(symbol,exch_object):
     for i in bids:
         if i[0] >= bid_weighted_price:
             bid_volume += i[1]
-    
     ask_volume = 0
     ask_weighted_price = 0
     asks = orderbook['asks'][:3]
@@ -68,20 +70,25 @@ def get_orderbook(symbol,exch_object):
     for i in asks:
         if i[0] <= ask_weighted_price:
             ask_volume += i[1]
-            
     orderbook_dict = {
             'timestamp':[timestamp],
             'bid_price':[round(bid_weighted_price,precision['price'])],
             'bid_volume':[round(bid_volume,precision['amount'])],
             'ask_price':[round(ask_weighted_price,precision['price'])],
             'ask_volume':[round(ask_volume,precision['amount'])]}
-    
     df = pd.DataFrame(orderbook_dict)
     orderbook_df = convert_orderbook_dtypes(df,precision)
     return orderbook_df
     
-    
-#------------------------------------------------------------------------------
+
+def fetch_orders_safely(sym,obj):
+    try:
+        orderbook = obj.fetch_l2_order_book(sym,3)
+    except:
+        print("Note: There was an error fetching the "+sym+" orderbook for "+obj.name)
+        time.sleep(3)
+        orderbook = fetch_orders_safely(obj,sym)
+    return orderbook
     
     
 def convert_orderbook_dtypes(df,precision):
