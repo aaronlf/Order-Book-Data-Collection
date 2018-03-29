@@ -8,7 +8,8 @@ Created on Wed Mar 28 15:07:22 2018
 import pandas as pd
 import time
 import numpy as np
-
+import sched
+import threading
 
 #------------------------------------------------------------------------------
 
@@ -111,3 +112,28 @@ def convert_orderbook_dtypes(df,precision):
 #------------------------------------------------------------------------------    
 
     
+def collect_data(symbol,exch_object):
+    exchange_name = exch_object.name
+    orderbook = get_orderbook(symbol,exch_object)
+    try:
+        retrieve_hdf_data(symbol,exchange_name)
+    except KeyError:
+        write_to_hdf(symbol,exchange_name,orderbook)
+    else:
+        append_to_hdf(symbol,exchange_name,orderbook)
+    with threading.Lock():
+        print("Collected data for "+symbol+" on "+exchange_name)
+
+def scheduled_task(exchange):
+    exch_object = exchange['exch_object']
+    all_symbols = exchange['symbols']
+    rateLimit = exch_object.rateLimit
+    s = sched.scheduler()
+    while len(all_symbols) > 0:
+        for symbol in all_symbols:
+            s.enter(rateLimit,0,collect_data,argument=(symbol,exch_object))
+            s.run()
+    pass
+
+
+#------------------------------------------------------------------------------
