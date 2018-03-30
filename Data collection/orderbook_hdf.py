@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 28 15:07:22 2018
-
 @author: Aaron
-
 """
 import pandas as pd
 import time
 import numpy as np
 import sched
 import threading
+import initialise_exchanges
+
 
 #------------------------------------------------------------------------------
 
 
 def write_to_hdf(symbol,exchange_name,df):
+    symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
     path = 'orderbook/'+key+'.h5'
     store = pd.HDFStore(path)
@@ -25,6 +26,7 @@ def write_to_hdf(symbol,exchange_name,df):
  
     
 def retrieve_hdf_data(symbol,exchange_name):
+    symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
     path = 'orderbook/'+key+'.h5'
     store = pd.HDFStore(path)
@@ -34,6 +36,7 @@ def retrieve_hdf_data(symbol,exchange_name):
 
 
 def append_to_hdf(symbol,exchange_name,df):
+    symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
     path = 'orderbook/'+key+'.h5'
     store = pd.HDFStore(path)
@@ -127,7 +130,7 @@ def collect_data(symbol,exch_object):
 def scheduled_task(exchange):
     exch_object = exchange['exch_object']
     all_symbols = exchange['symbols']
-    rateLimit = exch_object.rateLimit
+    rateLimit = exch_object.rateLimit / 1000
     s = sched.scheduler()
     while len(all_symbols) > 0:
         for symbol in all_symbols:
@@ -137,3 +140,22 @@ def scheduled_task(exchange):
 
 
 #------------------------------------------------------------------------------
+    
+
+def set_threads(exchanges):
+    threads_of_exchanges = []
+    for exchange in exchanges:
+        threads_of_exchanges.append(threading.Thread(target=scheduled_task,kwargs={'exchange':exchange},daemon=True))
+    for i in threads_of_exchanges:
+        i.start()
+    for i in threads_of_exchanges:
+        i.join()
+        
+        
+#------------------------------------------------------------------------------ 
+
+
+exchanges = initialise_exchanges.exchanges
+if __name__ == '__main__':
+    set_threads(exchanges)     
+        

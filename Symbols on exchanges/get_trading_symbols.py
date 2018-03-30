@@ -75,6 +75,7 @@ def initialise_and_fetch_symbols():
                 exchanges_and_symbols[i]['symbols'] = exch.symbols
         except:
             print("EXCHANGE '"+str(exch.name)+"' CONNECTION FAILED")
+            exchanges_and_symbols[i]['symbols'] = []
         exchanges_and_symbols[i]['exch_object'] = exch
     #print("Markets loaded.\n")
     

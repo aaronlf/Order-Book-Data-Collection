@@ -86,6 +86,7 @@ def designate(server_num):
             exchange_servers[i]['symbols'] = symbols_needed
         else:
             exchange_servers[i]['symbols'] = []
+    return exchange_servers
             
 
 #------------------------------------------------------------------------------
@@ -93,10 +94,12 @@ def designate(server_num):
             
 def main(n):
     add_symbols_to_dict()
-    designate(n)
+    return designate(n)
 
 
 #------------------------------------------------------------------------------
     
-    
-exchanges = main(1)
+serverNumber = 1
+exchanges = main(serverNumber)
+
+#------------------------------------------------------------------------------
