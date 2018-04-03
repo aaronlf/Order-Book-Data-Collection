@@ -1,5 +1,5 @@
 ### Setting up working directory
-##### 1) Move the following files to the working directory
+##### 1) Copy the following files to the working directory (Unix/Linux)
 - *orderbook_collect.sh*
 - *orderbook_hdf.py*
 - *setup.sh*  
