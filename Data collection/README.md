@@ -16,3 +16,5 @@ This is where h5 files will be saved to.
 `$ bash orderbook_collect.sh`
 
 Note: If bash scripts are not working, you may need to perform an EOL conversion from Windows to Linux. This can be done through *Notepad++* under the Edit tab. This problem shouldn't crop up, however.
+
+**EDIT: The bash script 'setup.sh' will only work for Debian-based distros because it contains the command 'apt-get install'. If using an RPM-based distro, use yum instead.**
