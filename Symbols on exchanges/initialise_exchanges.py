@@ -28,7 +28,7 @@ exchange_servers = {
         'bitstamp':{"servers":list(range(0,10))},
         'bittrex':{"servers":list(range(0,10))},
         'bleutrade':{"servers":list(range(0,10))}, 
-        'cryptopia':{"servers":list(range(0,10))}, 
+        #'cryptopia':{"servers":list(range(0,10))}, 
         'dsx':{"servers":list(range(0,10))}, 
         'exmo':{"servers":list(range(0,10))}, 
         'gateio':{"servers":list(range(0,10))},
@@ -99,7 +99,8 @@ def main(n):
 
 #------------------------------------------------------------------------------
     
-serverNumber = 1
+serverNumber = 3
+print("Initialising...")
 exchanges = main(serverNumber)
 
 #------------------------------------------------------------------------------

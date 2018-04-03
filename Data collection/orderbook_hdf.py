@@ -89,7 +89,7 @@ def fetch_orders_safely(sym,obj):
     try:
         orderbook = obj.fetch_l2_order_book(sym,3)
     except:
-        print("Note: There was an error fetching the "+sym+" orderbook for "+obj.name)
+        print("Note: There was an error fetching the "+sym+" orderbook for "+str(obj.id))
         time.sleep(3)
         orderbook = fetch_orders_safely(obj,sym)
     return orderbook
@@ -116,7 +116,7 @@ def convert_orderbook_dtypes(df,precision):
 
     
 def collect_data(symbol,exch_object):
-    exchange_name = exch_object.name
+    exchange_name = str(exch_object.id)
     orderbook = get_orderbook(symbol,exch_object)
     try:
         retrieve_hdf_data(symbol,exchange_name)
@@ -128,8 +128,8 @@ def collect_data(symbol,exch_object):
         print("Collected data for "+symbol+" on "+exchange_name)
 
 def scheduled_task(exchange):
-    exch_object = exchange['exch_object']
-    all_symbols = exchange['symbols']
+    exch_object = exchanges[exchange]['exch_object']
+    all_symbols = exchanges[exchange]['symbols']
     rateLimit = exch_object.rateLimit / 1000
     s = sched.scheduler()
     while len(all_symbols) > 0:
