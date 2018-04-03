@@ -49,8 +49,16 @@ def append_to_hdf(symbol,exchange_name,df):
     
 
 def get_orderbook(symbol,exch_object):
+    name = exch_object.id
     orderbook = fetch_orders_safely(symbol,exch_object)
+    if orderbook['timestamp'] == None:
+        exchanges[name]['symbols'].remove(symbol)
+        return pd.DataFrame(columns=['A'])
     precision = exch_object.markets[symbol]['precision']
+    if precision == {}: # CCXT HAS NOT FILLED IN THE PRECISION FOR ALL COINS CORRECTLY
+        precision = {'amount': 8, 'price': 8}
+    elif type(precision['amount']) != int or type(precision['price']) != int:
+        precision = {'amount': 8, 'price': 8}
     timestamp = orderbook['timestamp']    
     bid_volume = 0
     bid_weighted_price = 0
@@ -79,19 +87,21 @@ def get_orderbook(symbol,exch_object):
             'bid_price':[round(bid_weighted_price,precision['price'])],
             'bid_volume':[round(bid_volume,precision['amount'])],
             'ask_price':[round(ask_weighted_price,precision['price'])],
-            'ask_volume':[round(ask_volume,precision['amount'])]}
+            'ask_volume':[round(ask_volume,precision['amount'])]
+            }
     df = pd.DataFrame(orderbook_dict)
     orderbook_df = convert_orderbook_dtypes(df,precision)
     return orderbook_df
     
 
 def fetch_orders_safely(sym,obj):
+    name = obj.id
     try:
-        orderbook = obj.fetch_l2_order_book(sym,3)
+        orderbook = obj.fetch_l2_order_book(sym,5)
     except:
-        print("Note: There was an error fetching the "+sym+" orderbook for "+str(obj.id))
+        print("Note: There was an error fetching the "+sym+" orderbook for "+str(name))
         time.sleep(3)
-        orderbook = fetch_orders_safely(obj,sym)
+        orderbook = fetch_orders_safely(sym,obj)
     return orderbook
     
     
@@ -118,19 +128,23 @@ def convert_orderbook_dtypes(df,precision):
 def collect_data(symbol,exch_object):
     exchange_name = str(exch_object.id)
     orderbook = get_orderbook(symbol,exch_object)
-    try:
-        retrieve_hdf_data(symbol,exchange_name)
-    except KeyError:
-        write_to_hdf(symbol,exchange_name,orderbook)
-    else:
-        append_to_hdf(symbol,exchange_name,orderbook)
-    with threading.Lock():
-        print("Collected data for "+symbol+" on "+exchange_name)
+    if orderbook.empty == False:
+        try:
+            retrieve_hdf_data(symbol,exchange_name)
+        except KeyError:
+            write_to_hdf(symbol,exchange_name,orderbook)
+        else:
+            append_to_hdf(symbol,exchange_name,orderbook)
+        with threading.Lock():
+            print("Collected data for "+symbol+" on "+exchange_name)
 
 def scheduled_task(exchange):
     exch_object = exchanges[exchange]['exch_object']
     all_symbols = exchanges[exchange]['symbols']
-    rateLimit = exch_object.rateLimit / 1000
+    if exch_object.id == 'quadrigacx':
+        rateLimit = 5.1
+    else:
+        rateLimit = exch_object.rateLimit / 1000
     s = sched.scheduler()
     while len(all_symbols) > 0:
         for symbol in all_symbols:
@@ -158,4 +172,5 @@ def set_threads(exchanges):
 exchanges = initialise_exchanges.exchanges
 if __name__ == '__main__':
     set_threads(exchanges)     
-        
+
+#------------------------------------------------------------------------------

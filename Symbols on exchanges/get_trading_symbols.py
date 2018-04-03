@@ -84,7 +84,7 @@ def initialise_and_fetch_symbols():
         
         
 def delete_fiat_symbols():
-    remove_dead_cryptopia_pairs()
+    #remove_dead_cryptopia_pairs()
     remove_bad_kraken_pairs()
     for i in exchanges_and_symbols:
             try:
