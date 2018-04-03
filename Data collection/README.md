@@ -9,7 +9,7 @@
 #### 2) Get the necessary dependencies
 `$ bash setup.sh`  
 
-### 3) Create an empty folder called 'orderbook' in the working directory
+#### 3) Create an empty folder called 'orderbook' in the working directory
 This is where h5 files will be saved to.
 
 ### How to run file
