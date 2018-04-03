@@ -8,6 +8,7 @@ Created on Fri Mar 23 11:22:40 2018
 
 import ccxt
 from collections import Counter
+import time
 
 
 #------------------------------------------------------------------------------
@@ -62,45 +63,58 @@ def main():
 
 def initialise_and_fetch_symbols():
     #print("Loading markets...")
-    for i in exchanges_and_symbols:
-        exch = getattr(ccxt,i)()
-        try:
-            if i == 'bibox':
-                exch.apiKey = 'acfa89fffbc601a51fed22f7c954b9320a23ec81' #PUBLIC KEY
-                exch.secret = '4af367bc9e6f5b6152b2664afb01af551ca9c52d'
-                exch.loadMarkets()
-                exchanges_and_symbols[i]['symbols'] = exch.symbols
-            else:
-                exch.loadMarkets()
-                exchanges_and_symbols[i]['symbols'] = exch.symbols
-        except:
-            print("EXCHANGE '"+str(exch.name)+"' CONNECTION FAILED")
-            exchanges_and_symbols[i]['symbols'] = []
-        exchanges_and_symbols[i]['exch_object'] = exch
+    for exchange in exchanges_and_symbols:
+        exch = fetch(exchange)
+        if exch == False:
+            print("\nEXCHANGE '"+str(exch.name)+"' CONNECTION FAILED. TRYING AGAIN...\n")
+            time.sleep(10)
+            if fetch(exchange) == False:
+                exchanges_and_symbols[exchange]['symbols'] = []
+        exchanges_and_symbols[exchange]['exch_object'] = exch
     #print("Markets loaded.\n")
     
     
-#------------------------------------------------------------------------------   
-        
-        
+#------------------------------------------------------------------------------
+    
+    
+def fetch(exchange):
+    exch = getattr(ccxt,exchange)()
+    try:
+        if exchange == 'bibox':
+            exch.apiKey = 'acfa89fffbc601a51fed22f7c954b9320a23ec81' #PUBLIC KEY
+            exch.secret = '4af367bc9e6f5b6152b2664afb01af551ca9c52d'
+            exch.loadMarkets()
+            exchanges_and_symbols[exchange]['symbols'] = exch.symbols
+        else:
+            exch.loadMarkets()
+            exchanges_and_symbols[exchange]['symbols'] = exch.symbols
+    except:
+        return False
+    else:
+        return exch
+            
+            
+#------------------------------------------------------------------------------       
+
+
 def delete_fiat_symbols():
     #remove_dead_cryptopia_pairs()
     remove_bad_kraken_pairs()
     for i in exchanges_and_symbols:
-            try:
-                filtered_list = [x for x in exchanges_and_symbols[i]['symbols'] if x.split('/')[1] not in fiat_quotes]
-                exchanges_and_symbols[i]['symbols'] = filtered_list
-            except:
-                print('Error deleting fiat symbols from '+str(i))
+        try:
+            filtered_list = [x for x in exchanges_and_symbols[i]['symbols'] if x.split('/')[1] not in fiat_quotes]
+            exchanges_and_symbols[i]['symbols'] = filtered_list
+        except:
+            print('Error deleting fiat symbols from '+str(i))
 
 
 #------------------------------------------------------------------------------
 
-
+'''
 def remove_dead_cryptopia_pairs():
     pairs = [i for i in exchanges_and_symbols['cryptopia']['symbols'] if i.split('/')[1] not in ['DOGE']]
     exchanges_and_symbols['cryptopia']['symbols'] = pairs
-    
+'''    
     
 #------------------------------------------------------------------------------
 
