@@ -99,8 +99,8 @@ def main(n):
 
 #------------------------------------------------------------------------------
     
-serverNumber = 3
-print("Initialising...")
+serverNumber = 0
+print("\nInitialising...\n")
 exchanges = main(serverNumber)
 
 #------------------------------------------------------------------------------
