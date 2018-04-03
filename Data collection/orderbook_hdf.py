@@ -20,7 +20,6 @@ def write_to_hdf(symbol,exchange_name,df):
     path = 'orderbook/'+key+'.h5'
     store = pd.HDFStore(path)
     store.put(key,df,'t')
-    time.sleep(2)
     store.close()
     pass
  
