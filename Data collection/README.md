@@ -1,10 +1,10 @@
 ### Setting up working directory
 ##### 1) Move the following files to the working directory:
-- *get_symbols.py*  
-- *initialise_exchanges.py*  
-- *orderbook_hdf.py*  
-- *setup.sh*
 - *orderbook_collect.sh*
+- *orderbook_hdf.py*
+- *setup.sh*  
+- *get_symbols.py*
+- *initialise_exchanges.py*
 
 ##### 2) Get the necessary dependencies:
 `bash setup.sh`  
