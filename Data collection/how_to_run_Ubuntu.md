@@ -8,5 +8,9 @@
 ##### 2) Get the necessary dependencies:
 `bash setup.sh`  
 
-##### 3) Run file:
+##### 3) Create a folder called 'orderbook' in the working directory
+
+##### 4) Run file:
 `bash orderbook_collect.sh`
+
+Note: If bash scripts are not working, you may need to perform an EOL conversion from Windows to Linux. This can be done through Notepad++ under the Edit tab. This problem shouldn't crop up, however.
