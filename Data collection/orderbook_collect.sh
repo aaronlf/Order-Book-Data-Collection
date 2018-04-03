@@ -1,6 +1,6 @@
 #!/bin/bash
-while :
+while true
 do
-	python3 orderbook_hdf.py
-	pip install ccxt --upgrade
-done
+ pip3 install ccxt --upgrade
+ python3 orderbook_hdf.py
+done 
