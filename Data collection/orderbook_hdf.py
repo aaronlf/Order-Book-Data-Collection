@@ -50,15 +50,15 @@ def append_to_hdf(symbol,exchange_name,df):
 def get_orderbook(symbol,exch_object):
     name = exch_object.id
     orderbook = fetch_orders_safely(symbol,exch_object)
-    if orderbook['timestamp'] == None:
+    timestamp = orderbook['timestamp']
+    if timestamp == None:
         exchanges[name]['symbols'].remove(symbol)
         return pd.DataFrame(columns=['A'])
     precision = exch_object.markets[symbol]['precision']
     if precision == {}: # CCXT HAS NOT FILLED IN THE PRECISION FOR ALL COINS CORRECTLY
         precision = {'amount': 8, 'price': 8}
     elif type(precision['amount']) != int or type(precision['price']) != int:
-        precision = {'amount': 8, 'price': 8}
-    timestamp = orderbook['timestamp']    
+        precision = {'amount': 8, 'price': 8}    
     bid_volume = 0
     bid_weighted_price = 0
     bids = orderbook['bids'][:3]
