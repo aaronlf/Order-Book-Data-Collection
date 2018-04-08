@@ -9,6 +9,7 @@ import numpy as np
 import sched
 import threading
 import initialise_exchanges
+import sys
 
 
 #------------------------------------------------------------------------------
@@ -50,15 +51,15 @@ def append_to_hdf(symbol,exchange_name,df):
 def get_orderbook(symbol,exch_object):
     name = exch_object.id
     orderbook = fetch_orders_safely(symbol,exch_object)
-    timestamp = orderbook['timestamp']
-    if timestamp == None:
+    if orderbook['timestamp'] == None:
         exchanges[name]['symbols'].remove(symbol)
         return pd.DataFrame(columns=['A'])
     precision = exch_object.markets[symbol]['precision']
     if precision == {}: # CCXT HAS NOT FILLED IN THE PRECISION FOR ALL COINS CORRECTLY
         precision = {'amount': 8, 'price': 8}
     elif type(precision['amount']) != int or type(precision['price']) != int:
-        precision = {'amount': 8, 'price': 8}    
+        precision = {'amount': 8, 'price': 8}
+    timestamp = orderbook['timestamp']    
     bid_volume = 0
     bid_weighted_price = 0
     bids = orderbook['bids'][:3]
@@ -136,6 +137,7 @@ def collect_data(symbol,exch_object):
             append_to_hdf(symbol,exchange_name,orderbook)
         with threading.Lock():
             print("Collected data for "+symbol+" on "+exchange_name)
+            sys.stdout.flush()
 
 def scheduled_task(exchange):
     exch_object = exchanges[exchange]['exch_object']
@@ -168,8 +170,9 @@ def set_threads(exchanges):
 #------------------------------------------------------------------------------ 
 
 
-exchanges = initialise_exchanges.exchanges
 if __name__ == '__main__':
+    serverNumber = int(sys.argv[1])
+    exchanges = initialise_exchanges.initialise(serverNumber)
     set_threads(exchanges)     
 
 #------------------------------------------------------------------------------

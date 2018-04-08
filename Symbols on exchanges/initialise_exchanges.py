@@ -92,15 +92,10 @@ def designate(server_num):
 #------------------------------------------------------------------------------
             
             
-def main(n):
+def initialise(serverNumber):
+    print("\nInitialising...\n")
     add_symbols_to_dict()
-    return designate(n)
+    return designate(serverNumber)
 
-
-#------------------------------------------------------------------------------
-    
-serverNumber = 0
-print("\nInitialising...\n")
-exchanges = main(serverNumber)
 
 #------------------------------------------------------------------------------

@@ -66,7 +66,7 @@ def initialise_and_fetch_symbols():
     for exchange in exchanges_and_symbols:
         exch = fetch(exchange)
         if exch == False:
-            print("\nEXCHANGE '"+str(exch.name)+"' CONNECTION FAILED. TRYING AGAIN...\n")
+            print("\nEXCHANGE '"+str(exchange)+"' CONNECTION FAILED. TRYING AGAIN...\n")
             time.sleep(10)
             if fetch(exchange) == False:
                 exchanges_and_symbols[exchange]['symbols'] = []
