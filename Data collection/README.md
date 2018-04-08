@@ -13,7 +13,8 @@
 `$ bash orderbook_collect.sh`
 
 By default this will collect orderbook data for what is considered 'server0'. This value can be changed in orderbook_collect.sh'. 
-*(At time of writing, not all servers have been made, so the result isn't an accurate representationof what symbols will be measured on Server 0)* It should also be noted that this bash file will not be used for orderbook collection, as the SSH automation script eliminates the need. However I'll keep it in the repository because it's an easy way to test the code on a single instance!
+*(At time of writing, not all servers have been made, so the result isn't an accurate representationof what symbols will be measured on Server 0)*. 
+It should also be noted that this bash script will not be used for orderbook collection, as the SSH automation script eliminates the need. However I'll keep it in the repository because it's an easy way to test the code on a single instance!
 
 Note: If bash scripts are not working, you may need to perform an EOL conversion from Windows to Linux. This can be done through *Notepad++* under the Edit tab. This problem shouldn't crop up, however.
 
