@@ -13,6 +13,7 @@ import pysftp as sftp
 import paramiko
 import style
 import re
+import threading
 
 style.enabled = True
 cnopts = sftp.CnOpts()
@@ -107,9 +108,46 @@ servers = {
                 'ip':'',
                 'platform':''
                 },
-        
-        # Etc...
-        
+        'server21':{
+                'ip':'',
+                'platform':''
+                },
+        'server22':{
+                'ip':'',
+                'platform':''
+                },
+        'server23':{
+                'ip':'',
+                'platform':''
+                },
+        'server24':{
+                'ip':'',
+                'platform':''
+                },
+        'server25':{
+                'ip':'',
+                'platform':''
+                },
+        'server26':{
+                'ip':'',
+                'platform':''
+                },
+        'server27':{
+                'ip':'',
+                'platform':''
+                },
+        'server28':{
+                'ip':'',
+                'platform':''
+                },
+        'server29':{
+                'ip':'',
+                'platform':''
+                },
+        'server30':{
+                'ip':'',
+                'platform':''
+                }
         }
 
 
@@ -167,7 +205,7 @@ def giveCommands(server,commands):
     c = paramiko.SSHClient()
     c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     
-    print("Connecting...")
+    print("\n\nConnecting to",server,"...")
     c.connect(hostname = IP_address, username = username, pkey = k )
     print("Connected.\n")
     
@@ -176,17 +214,17 @@ def giveCommands(server,commands):
         stdin , stdout, stderr = c.exec_command(command)
         if type(commands) == dict and commands[command]:
             for interactiveCommand in commands[command]:
-                print(interactiveCommand)
+                print("Entering",style.cyan(interactiveCommand))
                 stdin.write(interactiveCommand)
                 stdin.write('\n')
                 stdin.flush()
         if 'nohup' in command.split():
-            c.close()
             print("Closed.")
+            break
         else:
             print("Output:",style.magenta(stdout.read().decode()))
             print("Errors:",style.red(stderr.read().decode()))
-            c.close()
+    c.close()
 
 
 #------------------------------------------------------------------------------
@@ -206,7 +244,7 @@ def get_IP(server):
 def get_username(server):
     if servers[server]['platform'] == 'DigitalOcean':
         return 'DIGITAL_OCEAN_USERNAME'
-    elif server['platform'] == 'AWS':
+    elif servers[server]['platform'] == 'AWS':
         return 'AWS_USERNAME'
     
     
@@ -237,7 +275,6 @@ def get_orderbook_collection_commands(server):
     
 
 def set_up_all_servers():
-    commands = {'bash setup.sh':'y'}
     files = [
             'orderbook_hdf.py',
             'initialise_exchanges.py',
@@ -245,9 +282,11 @@ def set_up_all_servers():
             'setup.sh'
             ]
     for server in servers:
+        serverNum = get_serverNum(server)
+        commands = {'bash setup.sh':'y','mkdir orderbook'+serverNum:''}
         putFilesToServer(server,files)
         giveCommands(server,commands)
-        print(server,"set up successfully.")
+        print(server,"set up successfully.\n")
         
         
 def run_program_on_all_servers():
@@ -255,13 +294,59 @@ def run_program_on_all_servers():
         commands = get_orderbook_collection_commands(server)
         giveCommands(server,commands)
         
+
+def kill_all_python3():
+    for server in servers:
+        commands = ['sudo pkill python3']
+        giveCommands(server,commands)
+
         
+#------------------------------------------------------------------------------
+
+
+def thread_function(func):
+    threads_list = []
+    for i in range(len(servers)):
+        thread =  threading.Thread(target=func)
+        thread.start()
+        threads_list.append(thread)
+    for thread in threads_list:
+        thread.join()
+# DON'T THINK I'LL BOTHER WITH RUNNING THE PROGRAM WITH MULTITHREADING. IT WOULD
+# ENTAIL ADDING A LOCK TO A LOT OF STATEMENTS AND I'M NOT BOTHERED.
+
 #------------------------------------------------------------------------------
         
 
 if __name__ == '__main__':
-    set_up_all_servers()
-    run_program_on_all_servers()
+    
+    '''
+    to test servers can be reached:
+    '''
+    #for server in servers:
+    #    commands = ['\n']
+    #    giveCommands(server,commands)
+    
+    
+    '''
+    to configure all servers:
+    '''
+    #set_up_all_servers()
+    
+    
+    '''
+    to run orderbook collection script on all servers:
+    '''
+    #run_program_on_all_servers()
+    
+    
+    '''
+    to kill all python processes across servers:
+    '''
+    #kill_all_python3()
+    
+      
+    pass
     
 
 #------------------------------------------------------------------------------
