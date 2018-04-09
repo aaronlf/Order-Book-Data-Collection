@@ -16,9 +16,10 @@ import sys
 
 
 def write_to_hdf(symbol,exchange_name,df):
+    global serverNumber
     symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
-    path = 'orderbook/'+key+'.h5'
+    path = 'orderbook'+str(serverNumber)+'/'+key+'.h5'
     store = pd.HDFStore(path)
     store.put(key,df,'t')
     store.close()
@@ -26,9 +27,10 @@ def write_to_hdf(symbol,exchange_name,df):
  
     
 def retrieve_hdf_data(symbol,exchange_name):
+    global serverNumber
     symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
-    path = 'orderbook/'+key+'.h5'
+    path = 'orderbook'+str(serverNumber)+'/'+key+'.h5'
     store = pd.HDFStore(path)
     df = store[key]
     store.close()
@@ -36,9 +38,10 @@ def retrieve_hdf_data(symbol,exchange_name):
 
 
 def append_to_hdf(symbol,exchange_name,df):
+    global serverNumber
     symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
-    path = 'orderbook/'+key+'.h5'
+    path = 'orderbook'+str(serverNumber)+'/'+key+'.h5'
     store = pd.HDFStore(path)
     store.append(key,df,ignore_index=True)
     store.close()
@@ -51,7 +54,7 @@ def append_to_hdf(symbol,exchange_name,df):
 def get_orderbook(symbol,exch_object):
     name = exch_object.id
     orderbook = fetch_orders_safely(symbol,exch_object)
-    if orderbook['timestamp'] == None:
+    if not orderbook['asks']:
         exchanges[name]['symbols'].remove(symbol)
         return pd.DataFrame(columns=['A'])
     precision = exch_object.markets[symbol]['precision']
@@ -59,7 +62,7 @@ def get_orderbook(symbol,exch_object):
         precision = {'amount': 8, 'price': 8}
     elif type(precision['amount']) != int or type(precision['price']) != int:
         precision = {'amount': 8, 'price': 8}
-    timestamp = orderbook['timestamp']    
+    timestamp = int(round(time.time() * 1000))   
     bid_volume = 0
     bid_weighted_price = 0
     bids = orderbook['bids'][:3]
@@ -138,6 +141,7 @@ def collect_data(symbol,exch_object):
         with threading.Lock():
             print("Collected data for "+symbol+" on "+exchange_name)
             sys.stdout.flush()
+
 
 def scheduled_task(exchange):
     exch_object = exchanges[exchange]['exch_object']
