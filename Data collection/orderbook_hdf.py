@@ -72,7 +72,7 @@ def write_to_csv(symbol,exchange_name,df):
     key = symbol+'_'+exchange_name
     path = 'orderbook'+str(serverNumber)+'/'+key+'.csv'
     with open(path, 'w') as f:
-        df.to_csv(f, header=False)
+        df.to_csv(f, columns=df.columns.values.tolist())
  
     
 def retrieve_csv_data(symbol,exchange_name):
