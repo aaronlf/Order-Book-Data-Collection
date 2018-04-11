@@ -24,7 +24,6 @@ exchanges_and_symbols = {
         'bitstamp':{},
         'bittrex':{},
         'bleutrade':{}, 
-        #'cryptopia':{}, 
         'dsx':{}, 
         'exmo':{}, 
         'gateio':{},

@@ -19,31 +19,30 @@ import get_trading_symbols
 
 
 exchange_servers = {
-        'acx':{"servers":list(range(0,10))}, # Servers 0-9 . example. Edit this
-        'anxpro':{"servers":list(range(0,10))},
-        'bibox':{"servers":list(range(0,10))},
-        'binance':{"servers":list(range(0,10))},
-        'bitfinex':{"servers":list(range(0,10))},
-        'bitlish':{"servers":list(range(0,10))},
-        'bitstamp':{"servers":list(range(0,10))},
-        'bittrex':{"servers":list(range(0,10))},
-        'bleutrade':{"servers":list(range(0,10))}, 
-        #'cryptopia':{"servers":list(range(0,10))}, 
-        'dsx':{"servers":list(range(0,10))}, 
-        'exmo':{"servers":list(range(0,10))}, 
-        'gateio':{"servers":list(range(0,10))},
-        'hitbtc':{"servers":list(range(0,10))},
-        'huobipro':{"servers":list(range(0,10))},
-        'kraken':{"servers":list(range(0,6))},
-        'kucoin':{"servers":list(range(0,10))},
-        'liqui':{"servers":list(range(0,10))},
-        'livecoin':{"servers":list(range(0,10))},
-        'okex':{"servers":list(range(0,10))},
-        'poloniex':{"servers":list(range(0,10))},
-        'quadrigacx':{"servers":list(range(0,10))},
-        'southxchange':{"servers":list(range(0,10))},
-        'tidex':{"servers":list(range(0,10))},
-        'zaif':{"servers":list(range(0,10))}
+        'acx':{"servers":list(range(29,31))}, # Servers 29 and 30 
+        'anxpro':{"servers":list(range(27,29))},
+        'bibox':{"servers":list(range(16,31))},
+        'binance':{"servers":list(range(11,31))},
+        'bitfinex':{"servers":list(range(11,24))},
+        'bitlish':{"servers":list(range(7,11))},
+        'bitstamp':{"servers":list(range(7,11))},
+        'bittrex':{"servers":list(range(0,20))},
+        'bleutrade':{"servers":list(range(0,7))}, 
+        'dsx':{"servers":list(range(7,11))}, 
+        'exmo':{"servers":list(range(22,27))}, 
+        'gateio':{"servers":list(range(0,20))},
+        'hitbtc':{"servers":list(range(0,31))},
+        'huobipro':{"servers":list(range(11,31))},
+        'kraken':{"servers":list(range(0,7))},
+        'kucoin':{"servers":list(range(11,31))},
+        'liqui':{"servers":list(range(11,31))},
+        'livecoin':{"servers":list(range(0,11))},
+        'okex':{"servers":list(range(0,31))},
+        'poloniex':{"servers":list(range(0,7))},
+        'quadrigacx':{"servers":list(range(0,4))},
+        'southxchange':{"servers":list(range(0,5))},
+        'tidex':{"servers":list(range(0,11))},
+        'zaif':{"servers":list(range(20,22))}
         }
 
 
@@ -62,17 +61,17 @@ def add_symbols_to_dict():
             if i == j:
                 exchange_servers[i]['symbols'] = exchanges_and_symbols[i]['symbols']
                 exchange_servers[i]['exch_object'] = exchanges_and_symbols[i]['exch_object']
-
+    
+            
 #------------------------------------------------------------------------------
-                
-                
+
+    
 def designate(server_num):
     for i in exchange_servers:
         servers = exchange_servers[i]['servers']
         
         if server_num in servers:
             symbols = exchange_servers[i]['symbols']
-            
             amount_of_symbols = len(symbols)
             amount_of_servers = len(servers)
         

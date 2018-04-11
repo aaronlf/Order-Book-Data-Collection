@@ -20,9 +20,11 @@ def write_to_hdf(symbol,exchange_name,df):
     symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
     path = 'orderbook'+str(serverNumber)+'/'+key+'.h5'
-    store = pd.HDFStore(path)
-    store.put(key,df,'t')
-    store.close()
+    with threading.Lock():
+        #print("writing")
+        store = pd.HDFStore(path)
+        store.put(key,df,'t')
+        store.close()
     pass
  
     
@@ -31,9 +33,11 @@ def retrieve_hdf_data(symbol,exchange_name):
     symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
     path = 'orderbook'+str(serverNumber)+'/'+key+'.h5'
-    store = pd.HDFStore(path)
-    df = store[key]
-    store.close()
+    with threading.Lock():
+        #print('retrieving')
+        store = pd.HDFStore(path)
+        df = store[key]
+        store.close()
     return df
 
 
@@ -42,10 +46,42 @@ def append_to_hdf(symbol,exchange_name,df):
     symbol = '_'.join(symbol.split('/'))
     key = symbol+'_'+exchange_name
     path = 'orderbook'+str(serverNumber)+'/'+key+'.h5'
-    store = pd.HDFStore(path)
-    store.append(key,df,ignore_index=True)
-    store.close()
+    with threading.Lock():
+        #print('appending')
+        store = pd.HDFStore(path)
+        store.append(key,df,ignore_index=True)
+        store.close()
     pass
+
+
+#------------------------------------------------------------------------------
+ 
+    
+def append_to_csv(symbol,exchange_name,df):
+    global serverNumber
+    symbol = '_'.join(symbol.split('/'))
+    key = symbol+'_'+exchange_name
+    path = 'orderbook'+str(serverNumber)+'/'+key+'.csv'
+    with open(path, 'a') as f:
+        df.to_csv(f, header=False)
+    
+    
+def write_to_csv(symbol,exchange_name,df):
+    global serverNumber
+    symbol = '_'.join(symbol.split('/'))
+    key = symbol+'_'+exchange_name
+    path = 'orderbook'+str(serverNumber)+'/'+key+'.csv'
+    with open(path, 'w') as f:
+        df.to_csv(f, header=False)
+ 
+    
+def retrieve_csv_data(symbol,exchange_name):
+    global serverNumber
+    symbol = '_'.join(symbol.split('/'))
+    key = symbol+'_'+exchange_name
+    path = 'orderbook'+str(serverNumber)+'/'+key+'.csv'
+    df = pd.read_csv(path)
+    return df
 
 
 #------------------------------------------------------------------------------
@@ -92,8 +128,8 @@ def get_orderbook(symbol,exch_object):
             'ask_price':[round(ask_weighted_price,precision['price'])],
             'ask_volume':[round(ask_volume,precision['amount'])]
             }
-    df = pd.DataFrame(orderbook_dict)
-    orderbook_df = convert_orderbook_dtypes(df,precision)
+    orderbook_df = pd.DataFrame(orderbook_dict)
+    #orderbook_df = convert_orderbook_dtypes(df,precision)
     return orderbook_df
     
 
@@ -133,29 +169,33 @@ def collect_data(symbol,exch_object):
     orderbook = get_orderbook(symbol,exch_object)
     if orderbook.empty == False:
         try:
-            retrieve_hdf_data(symbol,exchange_name)
-        except KeyError:
-            write_to_hdf(symbol,exchange_name,orderbook)
+            retrieve_csv_data(symbol,exchange_name)
+        except FileNotFoundError:
+            write_to_csv(symbol,exchange_name,orderbook)
         else:
-            append_to_hdf(symbol,exchange_name,orderbook)
+            append_to_csv(symbol,exchange_name,orderbook)
         with threading.Lock():
             print("Collected data for "+symbol+" on "+exchange_name)
-            sys.stdout.flush()
+            
 
 
 def scheduled_task(exchange):
     exch_object = exchanges[exchange]['exch_object']
     all_symbols = exchanges[exchange]['symbols']
-    if exch_object.id == 'quadrigacx':
-        rateLimit = 5.1
+    try:
+        if exch_object.id == 'quadrigacx':
+            rateLimit = 5.1
+        else:
+            rateLimit = exch_object.rateLimit / 1000
+    except AttributeError:
+        print('EXCHANGE "'+exchange+'" BEING REMOVED.')
     else:
-        rateLimit = exch_object.rateLimit / 1000
-    s = sched.scheduler()
-    while len(all_symbols) > 0:
-        for symbol in all_symbols:
-            s.enter(rateLimit,0,collect_data,argument=(symbol,exch_object))
-            s.run()
-    pass
+        s = sched.scheduler()
+        while len(all_symbols) > 0:
+            for symbol in all_symbols:
+                s.enter(rateLimit,0,collect_data,argument=(symbol,exch_object))
+                s.run()
+        pass
 
 
 #------------------------------------------------------------------------------
