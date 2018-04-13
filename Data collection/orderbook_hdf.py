@@ -89,7 +89,7 @@ def retrieve_csv_data(symbol,exchange_name):
 
 def get_orderbook(symbol,exch_object):
     name = exch_object.id
-    orderbook = fetch_orders_safely(symbol,exch_object)
+    orderbook = fetch_orders_safely(symbol,exch_object,0)
     if not orderbook['asks']:
         exchanges[name]['symbols'].remove(symbol)
         return pd.DataFrame(columns=['A'])
@@ -133,14 +133,17 @@ def get_orderbook(symbol,exch_object):
     return orderbook_df
     
 
-def fetch_orders_safely(sym,obj):
+def fetch_orders_safely(sym,obj,i):
     name = obj.id
-    try:
-        orderbook = obj.fetch_l2_order_book(sym,5)
-    except:
-        print("Note: There was an error fetching the "+sym+" orderbook for "+str(name))
-        time.sleep(3)
-        orderbook = fetch_orders_safely(sym,obj)
+    if i < 3:
+        try:
+            orderbook = obj.fetch_l2_order_book(sym,5,i)
+        except:
+            print("Note: There was an error fetching the "+sym+" orderbook for "+str(name))
+            time.sleep(3)
+            orderbook = fetch_orders_safely(sym,obj,i+1)
+    else:
+        orderbook = False
     return orderbook
     
     
