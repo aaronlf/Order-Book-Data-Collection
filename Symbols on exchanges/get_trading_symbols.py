@@ -27,7 +27,6 @@ exchanges_and_symbols = {
         'dsx':{}, 
         'exmo':{}, 
         'gateio':{},
-        'hitbtc':{},
         'huobipro':{},
         'kraken':{},
         'kucoin':{},

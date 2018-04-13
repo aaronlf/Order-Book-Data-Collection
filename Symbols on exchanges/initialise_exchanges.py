@@ -31,7 +31,6 @@ exchange_servers = {
         'dsx':{"servers":list(range(7,11))}, 
         'exmo':{"servers":list(range(22,27))}, 
         'gateio':{"servers":list(range(0,20))},
-        'hitbtc':{"servers":list(range(0,31))},
         'huobipro':{"servers":list(range(11,31))},
         'kraken':{"servers":list(range(0,7))},
         'kucoin':{"servers":list(range(11,31))},

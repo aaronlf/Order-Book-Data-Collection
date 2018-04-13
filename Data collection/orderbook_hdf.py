@@ -128,8 +128,8 @@ def get_orderbook(symbol,exch_object):
             'ask_price':[round(ask_weighted_price,precision['price'])],
             'ask_volume':[round(ask_volume,precision['amount'])]
             }
-    orderbook_df = pd.DataFrame(orderbook_dict)
-    #orderbook_df = convert_orderbook_dtypes(df,precision)
+    df = pd.DataFrame(orderbook_dict)
+    orderbook_df = convert_orderbook_dtypes(df,precision)
     return orderbook_df
     
 
