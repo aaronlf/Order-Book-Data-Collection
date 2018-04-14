@@ -137,7 +137,7 @@ def fetch_orders_safely(sym,obj,i):
     name = obj.id
     if i < 3:
         try:
-            orderbook = obj.fetch_l2_order_book(sym,5,i)
+            orderbook = obj.fetch_l2_order_book(sym,5)
         except:
             print("Note: There was an error fetching the "+sym+" orderbook for "+str(name))
             time.sleep(3)
