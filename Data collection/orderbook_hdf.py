@@ -143,7 +143,7 @@ def fetch_orders_safely(sym,obj,i):
             time.sleep(3)
             orderbook = fetch_orders_safely(sym,obj,i+1)
     else:
-        orderbook = False
+        orderbook = {'asks':False}
     return orderbook
     
     
