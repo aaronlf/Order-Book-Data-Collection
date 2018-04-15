@@ -135,12 +135,12 @@ def get_orderbook(symbol,exch_object):
 
 def fetch_orders_safely(sym,obj,i):
     name = obj.id
-    if i < 3:
+    if i < 5:
         try:
             orderbook = obj.fetch_l2_order_book(sym,5)
         except:
-            print("Note: There was an error fetching the "+sym+" orderbook for "+str(name))
-            time.sleep(3)
+            print("Note: There was an error fetching the "+sym+" orderbook for "+str(name)+'at '+time.strftime("%d-%m-%Y %H:%M:%S"))
+            time.sleep(5)
             orderbook = fetch_orders_safely(sym,obj,i+1)
     else:
         orderbook = {'asks':False}
@@ -177,8 +177,6 @@ def collect_data(symbol,exch_object):
             write_to_csv(symbol,exchange_name,orderbook)
         else:
             append_to_csv(symbol,exchange_name,orderbook)
-        with threading.Lock():
-            print("Collected data for "+symbol+" on "+exchange_name)
             
 
 
