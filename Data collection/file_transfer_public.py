@@ -25,128 +25,128 @@ cnopts.hostkeys = None
     
 servers = {
         'server0':{
-                'ip':'',
-                'platform':''
+                'ip':'159.65.101.168',
+                'platform':'DigitalOcean'
                 },
         'server1':{
-                'ip':'',
-                'platform':''
+                'ip':'167.99.162.43',
+                'platform':'DigitalOcean'
                 },
         'server2':{
-                'ip':'',
-                'platform':''
+                'ip':'167.99.100.11',
+                'platform':'DigitalOcean'
                 },
         'server3':{
-                'ip':'',
-                'platform':''
+                'ip':'167.99.108.24',
+                'platform':'DigitalOcean'
                 },
         'server4':{
-                'ip':'',
-                'platform':''
+                'ip':'167.99.110.121',
+                'platform':'DigitalOcean'
                 },
         'server5':{
-                'ip':'',
-                'platform':''
+                'ip':'159.89.147.221',
+                'platform':'DigitalOcean'
                 },
         'server6':{
-                'ip':'',
-                'platform':''
+                'ip':'159.89.147.195',
+                'platform':'DigitalOcean'
                 },
         'server7':{
-                'ip':'',
-                'platform':''
+                'ip':'206.189.22.57',
+                'platform':'DigitalOcean'
                 },
         'server8':{
-                'ip':'',
-                'platform':''
+                'ip':'206.189.22.59',
+                'platform':'DigitalOcean'
                 },
         'server9':{
-                'ip':'',
-                'platform':''
+                'ip':'46.101.58.236',
+                'platform':'DigitalOcean'
                 },
         'server10':{
-                'ip':'',
-                'platform':''
+                'ip':'46.101.77.22',
+                'platform':'DigitalOcean'
                 },
         'server11':{
-                'ip':'',
-                'platform':''
+                'ip':'18.236.72.99', 
+                'platform':'AWS'
                 },
         'server12':{
-                'ip':'',
-                'platform':''
+                'ip':'54.213.222.151', 
+                'platform':'AWS'
                 },
         'server13':{
-                'ip':'',
-                'platform':''
+                'ip':'35.166.218.168',
+                'platform':'AWS'
                 },
         'server14':{
-                'ip':'',
-                'platform':''
+                'ip':'54.186.161.177',
+                'platform':'AWS'
                 },
         'server15':{
-                'ip':'',
-                'platform':''
+                'ip':'54.203.23.91', 
+                'platform':'AWS'
                 },
         'server16':{
-                'ip':'',
-                'platform':''
+                'ip':'54.191.231.196',
+                'platform':'AWS'
                 },
         'server17':{
-                'ip':'',
-                'platform':''
+                'ip':'34.213.216.78',
+                'platform':'AWS'
                 },
         'server18':{
-                'ip':'',
-                'platform':''
+                'ip':'54.149.56.233',
+                'platform':'AWS'
                 },
         'server19':{
-                'ip':'',
-                'platform':''
+                'ip':'54.245.21.241',
+                'platform':'AWS'
                 },
         'server20':{
-                'ip':'',
-                'platform':''
+                'ip':'54.245.204.182', 
+                'platform':'AWS'
                 },
         'server21':{
-                'ip':'',
-                'platform':''
+                'ip':'54.214.106.194', 
+                'platform':'AWS'
                 },
         'server22':{
-                'ip':'',
-                'platform':''
+                'ip':'34.216.158.53',
+                'platform':'AWS'
                 },
         'server23':{
-                'ip':'',
-                'platform':''
+                'ip':'35.163.195.93',
+                'platform':'AWS'
                 },
         'server24':{
-                'ip':'',
-                'platform':''
+                'ip':'54.187.179.37',
+                'platform':'AWS'
                 },
         'server25':{
-                'ip':'',
-                'platform':''
+                'ip':'54.202.50.8',
+                'platform':'AWS'
                 },
         'server26':{
-                'ip':'',
-                'platform':''
+                'ip':'54.186.79.7',
+                'platform':'AWS'
                 },
         'server27':{
-                'ip':'',
-                'platform':''
+                'ip':'34.209.235.120',
+                'platform':'AWS'
                 },
         'server28':{
-                'ip':'',
-                'platform':''
+                'ip':'52.37.192.169',
+                'platform':'AWS'
                 },
         'server29':{
-                'ip':'',
-                'platform':''
+                'ip':'35.165.40.216',
+                'platform':'AWS'
                 },
         'server30':{
-                'ip':'',
-                'platform':''
+                'ip':'35.164.226.51',
+                'platform':'AWS'
                 }
         }
 
@@ -167,6 +167,7 @@ def putFilesToServer(server,filenames):
         remotePath = directory + filename
         localPath = filename
         s.put(localPath,remotePath)
+    print("Moved file(s) to ",server)
     s.close()
 
 
@@ -178,11 +179,15 @@ def getFilesFromServer(server,filenames):
     
     s = sftp.Connection(host=IP_address, username=username,
                         private_key=privateKey, cnopts=cnopts)
-    
+
     for filename in filenames:
-        remotePath = directory + filename
-        localPath = filename
-        s.get(remotePath,localPath)
+        files = s.listdir(filename)
+        for file in files:
+            localPath = 'raw_data/'+filename + '/' + file
+            remotePath = directory + filename + '/' + file
+            s.get(remotePath,localPath)
+    print("Retrieved file(s) from ",server)
+
     s.close()
     
     
@@ -205,7 +210,7 @@ def giveCommands(server,commands):
     c = paramiko.SSHClient()
     c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     
-    print("\n\nConnecting to",server,"...")
+    print("\n\nConnecting to "+server+"...")
     c.connect(hostname = IP_address, username = username, pkey = k )
     print("Connected.\n")
     
@@ -218,12 +223,8 @@ def giveCommands(server,commands):
                 stdin.write(interactiveCommand)
                 stdin.write('\n')
                 stdin.flush()
-        if 'nohup' in command.split():
-            print("Closed.")
-            break
-        else:
-            print("Output:",style.magenta(stdout.read().decode()))
-            print("Errors:",style.red(stderr.read().decode()))
+        print("Output:",style.magenta(stdout.read().decode()))
+        print("Errors:",style.red(stderr.read().decode()))
     c.close()
 
 
@@ -232,9 +233,9 @@ def giveCommands(server,commands):
 
 def get_key(server):
     if servers[server]['platform'] == 'DigitalOcean':
-        return 'PATH_TO_DIGITAL_OCEAN_KEY'
+        return 'C:/Users/Aaron/Desktop/Desktop stuff/SSH stuff/keyDO'
     elif servers[server]['platform'] == 'AWS':
-        return 'PATH_TO_AWS_KEY'
+        return 'C:/Users/Aaron/Desktop/Desktop stuff/SSH stuff/keyAWS'
     
     
 def get_IP(server):
@@ -243,16 +244,16 @@ def get_IP(server):
 
 def get_username(server):
     if servers[server]['platform'] == 'DigitalOcean':
-        return 'DIGITAL_OCEAN_USERNAME'
+        return 'root'
     elif servers[server]['platform'] == 'AWS':
-        return 'AWS_USERNAME'
+        return 'ubuntu'
     
     
 def get_dir(server):
     if servers[server]['platform'] == 'AWS':
-        return 'AWS_WORKING_DIRECTORY'
+        return '/home/ubuntu/'
     else:
-        return 'DIGITAL_OCEAN_WORKING_DIRECTORY'
+        return '/root/'
     
 
 #------------------------------------------------------------------------------
@@ -265,14 +266,28 @@ def get_serverNum(server_name):
 def get_orderbook_collection_commands(server):
     serverNum = get_serverNum(server)
     commands = [
-            'pip3 install ccxt --upgrade',
-            'nohup python3 orderbook_hdf.py '+serverNum+' &'
+            #'pip3 install ccxt --upgrade',
+            'nohup python3 orderbook_hdf.py '+serverNum+' > foo.out 2> foo.err < /dev/null &'
             ]
     return commands
 
 
 #------------------------------------------------------------------------------
     
+
+def set_up_one_server(server):
+    files = [
+            'orderbook_hdf.py',
+            'initialise_exchanges.py',
+            'get_trading_symbols.py',
+            'setup.sh'
+            ]
+    serverNum = get_serverNum(server)
+    commands = {'bash setup.sh':'y'}#,'mkdir orderbook'+serverNum:''}
+    putFilesToServer(server,files)
+    giveCommands(server,commands)
+    print(server,"set up successfully.\n")
+
 
 def set_up_all_servers():
     files = [
@@ -283,10 +298,18 @@ def set_up_all_servers():
             ]
     for server in servers:
         serverNum = get_serverNum(server)
-        commands = {'bash setup.sh':'y','mkdir orderbook'+serverNum:''}
+        commands = {'bash setup.sh':'y'}#,'mkdir orderbook'+serverNum:''}
         putFilesToServer(server,files)
         giveCommands(server,commands)
         print(server,"set up successfully.\n")
+        
+
+#------------------------------------------------------------------------------
+        
+        
+def run_program_on_one_servers(server):
+    commands = get_orderbook_collection_commands(server)
+    giveCommands(server,commands)
         
         
 def run_program_on_all_servers():
@@ -295,15 +318,59 @@ def run_program_on_all_servers():
         giveCommands(server,commands)
         
 
+#------------------------------------------------------------------------------
+
+        
+def kill_python3(server):
+    commands = ['sudo pkill python3']
+    giveCommands(server,commands)
+    
+    
 def kill_all_python3():
     for server in servers:
         commands = ['sudo pkill python3']
         giveCommands(server,commands)
+        
 
+#------------------------------------------------------------------------------
+
+        
+def clear_orderbook_folder(server):
+    serverNum = get_serverNum(server)
+    commands = ['rm -f orderbook'+str(serverNum)+'/*']
+    giveCommands(server,commands)
+
+
+def remove_orderbook_folder(server):
+    serverNum = get_serverNum(server)
+    commands = ['rm -r orderbook'+str(serverNum)+'/*']
+    giveCommands(server,commands)
+
+
+def clear_all_orderbook_folders():
+    for server in servers:
+        clear_orderbook_folder(server)
+        
+        
+def erase_on_all_servers():
+    for server in servers:
+        kill_python3(server)
+        clear_orderbook_folder(server)
+    
         
 #------------------------------------------------------------------------------
 
 
+def getFilesFromAllServers():
+    for server in servers:
+        serverNum = get_serverNum(server)
+        filename = ['orderbook'+str(serverNum)]
+        getFilesFromServer(server,filename)
+        
+        
+#------------------------------------------------------------------------------
+        
+        
 def thread_function(func):
     threads_list = []
     for i in range(len(servers)):
@@ -329,15 +396,17 @@ if __name__ == '__main__':
     
     
     '''
-    to configure all servers:
+    to erase data currently on one server to start fresh:
     '''
-    #set_up_all_servers()
+    #kill_python3('server1')
+    #clear_orderbook_folder('server1')
     
     
     '''
-    to run orderbook collection script on all servers:
+    to erase data currently on servers to start fresh:
     '''
-    #run_program_on_all_servers()
+    #erase_on_all_servers()
+    
     
     
     '''
@@ -345,7 +414,45 @@ if __name__ == '__main__':
     '''
     #kill_all_python3()
     
-      
+    #commands = ['sudo pkill python3','rm -f orderbook'+str(1)+'/*']
+    #giveCommands('server1',commands)
+    
+
+    '''
+    to set up one server:
+    '''
+    #set_up_one_server('server1')
+    
+    
+    '''
+    to set up all servers:
+    '''
+    #set_up_all_servers()
+    
+
+    
+    '''
+    to run script on a single test server:
+    '''
+    
+    #run_program_on_one_servers('server1')
+   
+    #commands = ['nohup python3 orderbook_hdf.py 1 > foo.out 2> foo.err < /dev/null &']
+    #giveCommands('server1',commands)
+
+
+    '''
+    to run orderbook collection script on all servers:
+    '''
+    #run_program_on_all_servers()    
+    
+    
+    '''
+    to collect orderbook folders from all servers:
+    '''
+    getFilesFromAllServers()
+    
+    
     pass
     
 
